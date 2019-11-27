@@ -1,5 +1,6 @@
 #include <MultiFuncShield.h>
 #include <TimerOne.h>
+#include <String.h>
 
 enum GeneratorStates
 {
@@ -26,6 +27,10 @@ long a = 0;
 long b = 0;
 long c = 0;
 long d = 0;
+String ca;
+String cb;
+String cc;
+String cd;
 bool unidadeDisplay = false;
 bool dezenaDisplay = false;
 bool centenaDisplay = false;
@@ -72,6 +77,7 @@ void loop() {
         if (a == 10){
           a = 0;
         }
+        ca = a + '0';
       }
 
       if(dezenaDisplay){
@@ -81,6 +87,7 @@ void loop() {
         if (b == 10){
           b = 0;
         }
+        cb = b + '0';
       }
 
       if (centenaDisplay){
@@ -90,6 +97,7 @@ void loop() {
         if (c == 10){
           c = 0;
         }
+        cc = c + '0';
       }
 
       if(milharDisplay){
@@ -99,10 +107,9 @@ void loop() {
         if (d == 10){
           d = 0;
         }
+        cd = d + '0';
       }
       
-    
-      MFS.write(toDisplayInt);
 
       if (btn == BUTTON_1_SHORT_RELEASE) {
         MFS.write("intr");
