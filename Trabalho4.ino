@@ -1,6 +1,5 @@
 #include <MultiFuncShield.h>
 #include <TimerOne.h>
-#include <String.h>
 
 enum GeneratorStates
 {
@@ -27,6 +26,7 @@ long a = 0;
 long b = 0;
 long c = 0;
 long d = 0;
+char toDisplay[4];
 String ca;
 String cb;
 String cc;
@@ -35,7 +35,6 @@ bool unidadeDisplay = false;
 bool dezenaDisplay = false;
 bool centenaDisplay = false;
 bool milharDisplay = false;
-String toDisplay;
 
 byte generatorState = GENERATOR_STOPPED;
 byte ledMoveValue = LED_ALL_OFF;
@@ -77,7 +76,7 @@ void loop() {
         if (a == 10){
           a = 0;
         }
-        ca = a + '0';
+        toDisplay[3] = a + '0';
       }
 
       if(dezenaDisplay){
@@ -87,7 +86,7 @@ void loop() {
         if (b == 10){
           b = 0;
         }
-        cb = b + '0';
+        toDisplay[2] = b + '0';
       }
 
       if (centenaDisplay){
@@ -97,7 +96,7 @@ void loop() {
         if (c == 10){
           c = 0;
         }
-        cc = c + '0';
+        toDisplay[1] = c + '0';
       }
 
       if(milharDisplay){
@@ -107,9 +106,11 @@ void loop() {
         if (d == 10){
           d = 0;
         }
-        cd = d + '0';
+        toDisplay[0] = d + '0';
       }
-      
+
+      //delay(10000);
+      MFS.write(toDisplay);
 
       if (btn == BUTTON_1_SHORT_RELEASE) {
         MFS.write("intr");
