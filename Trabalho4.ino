@@ -29,18 +29,15 @@ long d = 0;
 char toDisplay[4];
 
 bool inicio = true;
+bool completo = false;
 int seconds;
 int tenths;
 
 
 byte generatorState = GENERATOR_STOPPED;
-byte ledMoveValue = LED_ALL_OFF;
+byte ledModeValue = LED_ALL_OFF;
 
-void setup() {
-  // put your setup code here, to run once:
-  Timer1.initialize();
-  MFS.initialize(&Timer1);
-  randomSeed(analogRead(0));
+void inicializa(){
   randNumber = random(0, 10000);
   randNumberAux = randNumber;
   unidade = randNumberAux % 10;
@@ -54,7 +51,15 @@ void setup() {
   dezena = dezena + '0';
   centena = centena + '0';
   milhar = milhar + '0';
-  
+  completo = false;
+}
+
+void setup() {
+  // put your setup code here, to run once:
+  Timer1.initialize();
+  MFS.initialize(&Timer1);
+  randomSeed(analogRead(0));
+  Serial.begin(9600); 
 }
 
 void loop() {
@@ -65,7 +70,30 @@ void loop() {
   {
 
     case GENERATOR_STARTED:
-
+    if(!completo){
+        if(ledModeValue == LED_ALL_OFF){
+        ledModeValue = LED_1_ON;
+      }else if(ledModeValue == LED_1_ON){
+        Serial.println("VAI ACENDER!");
+        MFS.writeLeds(LED_4, OFF);
+        MFS.writeLeds(LED_1, ON);
+        ledModeValue = LED_2_ON;  
+      }else if(ledModeValue == LED_2_ON){
+        MFS.writeLeds(LED_1, OFF);
+        MFS.writeLeds(LED_2, ON);
+        ledModeValue = LED_3_ON;
+      }else if(ledModeValue == LED_3_ON){
+        MFS.writeLeds(LED_2, OFF);
+        MFS.writeLeds(LED_3, ON);
+        ledModeValue = LED_4_ON;
+      }else if(ledModeValue == LED_4_ON){
+        MFS.writeLeds(LED_3, OFF);
+        MFS.writeLeds(LED_4, ON);
+        ledModeValue = LED_1_ON;
+      }  
+    }
+    
+    
 	//INICIA O CONTADOR
 	tenths++;
 	
@@ -112,7 +140,7 @@ void loop() {
       }
 
       if(seconds >= 4){
-        toDisplay[0] = centena;
+        toDisplay[0] = milhar;
 		
       }
 	  else{
@@ -123,33 +151,53 @@ void loop() {
         toDisplay[0] = d + '0';
       }
 
+      if(seconds >= 5){
+        completo = true;
+        MFS.writeLeds(LED_1, OFF);
+        MFS.writeLeds(LED_2, OFF);
+        MFS.writeLeds(LED_3, OFF);
+        MFS.writeLeds(LED_4, OFF);
+        MFS.blinkDisplay(DIGIT_ALL, ON);
+      }
+
 
       MFS.write(toDisplay);
 
-      if (btn == BUTTON_1_SHORT_RELEASE) {
+      if (btn == BUTTON_1_SHORT_RELEASE && !completo) {
         MFS.write("intr");
+        generatorState = GENERATOR_STOPPED;
+      }
+
+      if (btn == BUTTON_1_SHORT_RELEASE && completo) {
+        inicio = true;
+        MFS.blinkDisplay(DIGIT_ALL, OFF);
         generatorState = GENERATOR_STOPPED;
       }
   
 
       delay(100);
 
+      break;
     case GENERATOR_STOPPED:
 
+      if(inicio = true){
+        MFS.write("0000");
+      }
+      
 		//PAUSA O CONTADOR
-
       if (btn == BUTTON_1_SHORT_RELEASE) {
         if(inicio == true)
-		{
-			inicio = false;
-			tenths = 0;
-			seconds = 0;
-		}
+		    {
+			    inicio = false;
+          inicializa();
+			    tenths = 0;
+			    seconds = 0;
+		    }
 		
-		generatorState = GENERATOR_STARTED;
+		    generatorState = GENERATOR_STARTED;
 
       }
+      break;
   }
 
-  //MFS.write((int)randNumber);
 }
