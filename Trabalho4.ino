@@ -180,7 +180,7 @@ void loop() {
       break;
     case GENERATOR_STOPPED:
 
-      if(inicio = true){
+      if(inicio == true){
         MFS.write("0000");
       }
       
