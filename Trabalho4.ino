@@ -27,14 +27,11 @@ long b = 0;
 long c = 0;
 long d = 0;
 char toDisplay[4];
-String ca;
-String cb;
-String cc;
-String cd;
-bool unidadeDisplay = false;
-bool dezenaDisplay = false;
-bool centenaDisplay = false;
-bool milharDisplay = false;
+
+bool inicio = true;
+int seconds;
+int tenths;
+
 
 byte generatorState = GENERATOR_STOPPED;
 byte ledMoveValue = LED_ALL_OFF;
@@ -69,9 +66,20 @@ void loop() {
 
     case GENERATOR_STARTED:
 
-      if(unidadeDisplay){
-        
-      }else{
+	//INICIA O CONTADOR
+	tenths++;
+	
+	if (tenths == 10)
+	{
+		tenths = 0;
+		seconds++;
+	}
+
+      if(seconds >= 1)
+	  {
+		  toDisplay[3] = unidade;
+      }
+	  else{
         a++;
         if (a == 10){
           a = 0;
@@ -79,9 +87,12 @@ void loop() {
         toDisplay[3] = a + '0';
       }
 
-      if(dezenaDisplay){
+      if(seconds >= 2){
         
-      }else{
+		toDisplay[2] = dezena;
+		
+      }
+	  else{
         b++;
         if (b == 10){
           b = 0;
@@ -89,9 +100,10 @@ void loop() {
         toDisplay[2] = b + '0';
       }
 
-      if (centenaDisplay){
-        
-      }else{
+      if (seconds >= 3){
+        toDisplay[1] = centena;
+      }
+	  else{
         c++;
         if (c == 10){
           c = 0;
@@ -99,9 +111,11 @@ void loop() {
         toDisplay[1] = c + '0';
       }
 
-      if(milharDisplay){
-        
-      }else{
+      if(seconds >= 4){
+        toDisplay[0] = centena;
+		
+      }
+	  else{
         d++;
         if (d == 10){
           d = 0;
@@ -109,7 +123,7 @@ void loop() {
         toDisplay[0] = d + '0';
       }
 
-      //delay(10000);
+
       MFS.write(toDisplay);
 
       if (btn == BUTTON_1_SHORT_RELEASE) {
@@ -117,12 +131,23 @@ void loop() {
         generatorState = GENERATOR_STOPPED;
       }
   
+
       delay(100);
 
     case GENERATOR_STOPPED:
 
+		//PAUSA O CONTADOR
+
       if (btn == BUTTON_1_SHORT_RELEASE) {
-        generatorState = GENERATOR_STARTED;
+        if(inicio == true)
+		{
+			inicio = false;
+			tenths = 0;
+			seconds = 0;
+		}
+		
+		generatorState = GENERATOR_STARTED;
+
       }
   }
 
